@@ -1,4 +1,5 @@
 import { sendMessage } from "@/lib/facebook";
+import { askGemini } from "@/lib/gemini";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -32,7 +33,9 @@ export async function POST(req: Request) {
         const userMessage = webhookEvent.message.text;
         console.log("User:", userMessage);
 
-        await sendMessage(senderId, `You said: ${userMessage}`);
+        const reply = askGemini(userMessage) ?? "Hello"
+
+        await sendMessage(senderId, reply);
       }
     }
     return Response.json({ status: "EVENT_RECEIVED" }, { status: 200 });
