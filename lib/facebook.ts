@@ -18,9 +18,21 @@ export async function sendMessage(recipientId: string, text: string | Promise<st
     body: JSON.stringify(payload),
   });
 
+  // Read the body at most once
+  const responseText = await res.text();
+
   if (!res.ok) {
-    console.error("Failed to send message:", await res.text());
+    console.error("Failed to send message:", responseText);
+    try {
+      return JSON.parse(responseText);
+    } catch {
+      return { error: true, status: res.status } as unknown as any;
+    }
   }
 
-  return res.json();
+  try {
+    return JSON.parse(responseText);
+  } catch {
+    return { ok: true } as unknown as any;
+  }
 }

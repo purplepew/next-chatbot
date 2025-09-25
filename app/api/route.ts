@@ -33,7 +33,8 @@ export async function POST(req: Request) {
         const userMessage = webhookEvent.message.text;
         console.log("User:", userMessage);
 
-        const reply = askGemini(userMessage) ?? "Hello"
+        const replyText = await askGemini(userMessage)
+        const reply = (typeof replyText === "string" && replyText.length > 0) ? replyText : "Hello"
 
         await sendMessage(senderId, reply);
       }

@@ -1,4 +1,5 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "@google/genai"; 
+
 const ai = new GoogleGenAI({ apiKey: "AIzaSyAuXGFYFLkw-QffZ4SDtPM2hnFmQISjQ3k" });
 
 export const askGemini = async (message: string) => {
