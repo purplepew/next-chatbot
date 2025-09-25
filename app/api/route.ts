@@ -1,3 +1,4 @@
+import { sendMessage } from "@/lib/facebook";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -18,15 +19,23 @@ export async function GET(req: NextRequest) {
   return new Response("Bad Request", { status: 400 });
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const body = await req.json();
 
   if (body.object === "page") {
-    body.entry.forEach((entry: any) => {
+    for (const entry of body.entry) {
       const webhookEvent = entry.messaging[0];
-      console.log("Webhook event:", webhookEvent);
-    });
-    return NextResponse.json({ status: "EVENT_RECEIVED" }, { status: 200 });
+      const senderId = webhookEvent.sender.id;
+
+      // If user sent a message, reply back
+      if (webhookEvent.message && webhookEvent.message.text) {
+        const userMessage = webhookEvent.message.text;
+        console.log("User:", userMessage);
+
+        await sendMessage(senderId, `You said: ${userMessage}`);
+      }
+    }
+    return Response.json({ status: "EVENT_RECEIVED" }, { status: 200 });
   }
 
   return new Response("Not Found", { status: 404 });
